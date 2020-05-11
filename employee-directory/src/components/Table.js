@@ -1,6 +1,25 @@
-import React from "react";
+import React, { Component } from "react";
+import Axios from "axios";
 
-function Table(props) {
+class Table extends Component {
+constructor(props) {
+  super(props);
+  this.state = {
+      employees: []
+    } 
+}
+componentDidMount() {
+  this.searchEmployees();
+}
+
+searchEmployees = () => {
+  Axios.get("https://alper.dev/employees/")
+    .then(res => this.setState({ employees: res.data }))
+    .catch(err => console.log(err));
+};
+
+render() {
+  console.log(this.state.employees)
   return (
     <table className = "table table-striped table-hover">
       <thead className ="thead-dark">
@@ -16,7 +35,7 @@ function Table(props) {
         </tr>
       </thead>
       <tbody>
-        {props.info.map(result => (
+        {this.state.employees.map(result => (
           <tr key = {result.id}>
             <td>{result.id}</td>
             <td><img alt = "" src = {result.avatar}></img></td>
@@ -29,9 +48,10 @@ function Table(props) {
           </tr>
         ))}
       </tbody>
-   
-</table>
+    </table>
   );
+}
+  
 }
 
 export default Table;
