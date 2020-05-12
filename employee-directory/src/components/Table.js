@@ -1,54 +1,72 @@
 import React, { Component } from "react";
+import Employee from "./Employee";
+import Form from "./Form";
 import Axios from "axios";
-
 class Table extends Component {
-constructor(props) {
-  super(props);
-  this.state = {
-      employees: []
-    } 
-}
-componentDidMount() {
-  this.searchEmployees();
-}
+  constructor(props) {
+    super(props);
+    this.state = {
+        employees: []
+    }
 
-searchEmployees = () => {
+  }
+  componentDidMount() {
+  this.searchEmployees();
+  }
+  
+  searchEmployees = () => {
   Axios.get("https://alper.dev/employees/")
-    .then(res => this.setState({ employees: res.data }))
-    .catch(err => console.log(err));
-};
+      .then(res => this.setState({ employees: res.data }))
+      .catch(err => console.log(err));
+  };
+  sortingHat = (spec) => {
+    let list = this.state.employees;
+    list.sort((a,b) => (a[spec] > b[spec]) ? 1 : -1 )
+    this.setState({
+        employees: list
+    })
+  }
+
+  departmentFilter = (department) => {
+    let list = this.state.employees.filter(employee => employee.department === department);
+    this.setState({
+      employees: list
+    })
+  }
 
 render() {
-  console.log(this.state.employees)
+
   return (
+    <div>
+      <br></br>
+      <Form searchEmployees = {this.searchEmployees} departmentFilter = {() => this.departmentFilter(document.getElementById("department").value.trim())}/>
+      <br></br>
     <table className = "table table-striped table-hover">
       <thead className ="thead-dark">
         <tr>
-            <th>ID #</th>
+            <th>
+            <button onClick = {() => this.sortingHat("id")}>ID # </button>
+            </th>
             <th>Avatar</th>
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>
+              <button onClick = {() => this.sortingHat("firstName")}>First Name</button>
+            </th>
+            <th>
+              <button onClick = {() => this.sortingHat("lastName")}>Last Name</button>
+            </th>
             <th>Email</th>
-            <th>Gender</th>
-            <th>Department</th>
-            <th>Start Date</th>
+            <th>
+              <button onClick = {() => this.sortingHat("gender")}>Gender</button>
+            </th>
+            <th>
+              <button onClick = {() => this.sortingHat("department")}>Department</button>
+            </th>
+            <th>Date</th>
         </tr>
       </thead>
-      <tbody>
-        {this.state.employees.map(result => (
-          <tr key = {result.id}>
-            <td>{result.id}</td>
-            <td><img alt = "" src = {result.avatar}></img></td>
-            <td>{result.firstName}</td>
-            <td>{result.lastName}</td>
-            <td>{result.email}</td>
-            <td>{result.gender}</td>
-            <td>{result.department}</td>
-            <td>{result.date}</td>
-          </tr>
-        ))}
-      </tbody>
+        <Employee employees = {this.state.employees}/>
     </table>
+    </div>
   );
 }
   
